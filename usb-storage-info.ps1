@@ -54,16 +54,13 @@ namespace SetupAPI {
 				return null;
 			};
 			if(CM_Get_Parent(ref dnDevInstParent, dnDevInst, 0)!=0) {
-				Console.WriteLine("#2");
 				return null;
 			};
 			if(CM_Get_Device_ID_Size(ref bufferLen, dnDevInstParent, 0)!=0) {
-				Console.WriteLine("#3");
 				return null;
 			};
 			IntPtr ptrBuffer = Marshal.AllocHGlobal(bufferLen*2+4);
 			if(CM_Get_Device_IDW(dnDevInstParent, ptrBuffer, bufferLen, 0)!=0) {
-				Console.WriteLine("#4");
 				Marshal.FreeHGlobal(ptrBuffer);
 				return null;
 			};
