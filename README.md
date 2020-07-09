@@ -1,2 +1,3 @@
-# usb-storage
-USB Storage operations
+# USB Sorage
+
+Powerscript USB Storage library
