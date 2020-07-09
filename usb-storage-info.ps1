@@ -84,30 +84,30 @@ $diskList = get-wmiobject -class "Win32_USBControllerDevice" | %{[wmi]($_.Depend
 $usbStorageInfo=@{}
 
 foreach ($usbstorDevice in $usbstorDeviceList) {
-	$deviceID = $usbstorDevice.DeviceID
+	$deviceID = $usbstorDevice.PNPDeviceID
 	$deviceLocation = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Enum\$deviceID" -Name LocationInformation -ErrorAction SilentlyContinue
 	if($deviceLocation) {
 		$serialNumber = ($deviceID -split "\\")[-1]
 		foreach ($disk in $diskList) {
-			if($disk.DeviceID.Contains($serialNumber)) {
+			if($disk.PNPDeviceID.Contains($serialNumber)) {
 				$deviceLocationInfo = ($deviceLocation.LocationInformation -split "\.")
 				$portNumber = ($deviceLocationInfo[0] -split "#")[1] -as [int]
 				$hubNumber = ($deviceLocationInfo[1] -split "#")[1] -as [int]
-				$parentID = [SetupAPI.DeviceManager]::getParent($disk.DeviceID)
+				$parentID = [SetupAPI.DeviceManager]::getParent($disk.PNPDeviceID)
 				if($parentID) {
 					$parentHUBID = [SetupAPI.DeviceManager]::getParent($parentID)
 					if($parentHUBID) {
 						$info = new-object -typename psobject -property @{
 							"Name" = $disk.Name;
 							"SerialNumber" = $serialNumber;
-							"DeviceID" = $disk.DeviceID;
+							"PNPDeviceID" = $disk.PNPDeviceID;
 							"HubNumber" = $hubNumber;
-							"Port" = $portNumber;
+							"HubPort" = $portNumber;
 							"HubID" = $parentHUBID;
 							"Hub" = "Unknown";
-							"DriveDeviceID" = "Unknwon";
+							"DeviceID" = "Unknwon";
 						}
-						$usbStorageInfo.Add($disk.DeviceID, $info)
+						$usbStorageInfo.Add($disk.PNPDeviceID, $info)
 					}
 				}
 			}
@@ -122,8 +122,8 @@ foreach ($usbstorDevice in $usbstorDeviceList) {
 $diskList = get-wmiobject -class "Win32_DiskDrive" | Select-Object –Property * | where-object {$_.InterfaceType -eq "USB"}
 foreach ($disk in $diskList) {
 	foreach ($key in $usbStorageInfo.Keys) {
-		if($usbStorageInfo[$key].DeviceID -eq $disk.PNPDeviceID) {
-			$usbStorageInfo[$key].DriveDeviceID = $disk.DeviceID
+		if($usbStorageInfo[$key].PNPDeviceID -eq $disk.PNPDeviceID) {
+			$usbStorageInfo[$key].DeviceID = $disk.DeviceID
 		}
 	}
 }
