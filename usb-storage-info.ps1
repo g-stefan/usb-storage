@@ -105,11 +105,25 @@ foreach ($usbstorDevice in $usbstorDeviceList) {
 							"Port" = $portNumber;
 							"HubID" = $parentHUBID;
 							"Hub" = "Unknown";
+							"DriveDeviceID" = "Unknwon";
 						}
 						$usbStorageInfo.Add($disk.DeviceID, $info)
 					}
 				}
 			}
+		}
+	}
+}
+
+#
+# Set Drive Info
+#
+
+$diskList = get-wmiobject -class "Win32_DiskDrive" | Select-Object –Property * | where-object {$_.InterfaceType -eq "USB"}
+foreach ($disk in $diskList) {
+	foreach ($key in $usbStorageInfo.Keys) {
+		if($usbStorageInfo[$key].DeviceID -eq $disk.PNPDeviceID) {
+			$usbStorageInfo[$key].DriveDeviceID = $disk.DeviceID
 		}
 	}
 }
