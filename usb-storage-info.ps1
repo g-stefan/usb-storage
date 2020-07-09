@@ -106,6 +106,7 @@ foreach ($usbstorDevice in $usbstorDeviceList) {
 							"HubID" = $parentHUBID;
 							"Hub" = "Unknown";
 							"DeviceID" = "Unknwon";
+							"DriveLetter" = "Unknwon";
 						}
 						$usbStorageInfo.Add($disk.PNPDeviceID, $info)
 					}
@@ -124,6 +125,20 @@ foreach ($disk in $diskList) {
 	foreach ($key in $usbStorageInfo.Keys) {
 		if($usbStorageInfo[$key].PNPDeviceID -eq $disk.PNPDeviceID) {
 			$usbStorageInfo[$key].DeviceID = $disk.DeviceID
+		}
+	}
+}
+
+#
+# Set Drive Letter
+#
+
+$logicalDiskList = get-wmiobject -class "Win32_LogicalDisk"
+foreach ($logicalDisk in $logicalDiskList) {
+	$deviceID = $logicalDisk.GetRelated("Win32_DiskPartition").GetRelated("Win32_DiskDrive").DeviceID
+	foreach ($key in $usbStorageInfo.Keys) {
+		if($usbStorageInfo[$key].DeviceID -eq $deviceID) {
+			$usbStorageInfo[$key].DriveLetter = $logicalDisk.DeviceID
 		}
 	}
 }
