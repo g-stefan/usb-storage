@@ -1,7 +1,7 @@
 # 
 #  USB Storage Info
 # 
-#  Copyright (c) 2020 Grigore Stefan <g_stefan@yahoo.com>
+#  Copyright (c) 2020-2021 Grigore Stefan <g_stefan@yahoo.com>
 #  Created by Grigore Stefan <g_stefan@yahoo.com>
 # 
 #  MIT License (MIT) <http://opensource.org/licenses/MIT>
@@ -120,7 +120,7 @@ foreach ($usbstorDevice in $usbstorDeviceList) {
 # Set Drive Info
 #
 
-$diskList = get-wmiobject -class "Win32_DiskDrive" | Select-Object –Property * | where-object {$_.InterfaceType -eq "USB"}
+$diskList = get-wmiobject -class "Win32_DiskDrive" | Select-Object ï¿½Property * | where-object {$_.InterfaceType -eq "USB"}
 foreach ($disk in $diskList) {
 	foreach ($key in $usbStorageInfo.Keys) {
 		if($usbStorageInfo[$key].PNPDeviceID -eq $disk.PNPDeviceID) {
